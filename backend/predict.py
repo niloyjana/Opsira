@@ -141,34 +141,40 @@ def generate_simulated_heatmap(img_bgr, raw_metrics):
     return cv2.resize(heatmap, (224, 224))
 
 def apply_hybrid_boosting(probs, raw_metrics):
-    """Problem 2: Feature-Model Boosting Logic (Refined)"""
+    """Problem 2: Feature-Model Boosting Logic (V3 - Multi-Signal Arbitration)"""
     boosted = probs.copy()
     
     c = raw_metrics["cloudiness"]
     y = raw_metrics["yellowness"]
     r = raw_metrics["redness"]
+    b = raw_metrics["brightness"]
     
-    # 1. Jaundice (High Precision Color Feature)
-    if y > 0.18:
+    # 1. Cataract vs Jaundice Arbitration
+    # A true cataract is bright and cloudy. Jaundice is yellow but usually darker than a white lens.
+    is_bright_cloudy = (c > 0.40 and b > 0.35)
+    
+    if is_bright_cloudy:
+        # Strong Cataract Signal
+        boosted["cataract"] += 0.30
+        boosted["healthy"]  -= 0.20
+        boosted["jaundice"] -= 0.10 # Prevent yellow-tinted cataracts from being called Jaundice
+    
+    # 2. Jaundice (High Precision Color Feature)
+    # Only boost Jaundice if it doesn't look like a bright cataract
+    if y > 0.18 and not is_bright_cloudy:
         y_boost = 0.20 * (y / 0.25)
         boosted["jaundice"] += min(y_boost, 0.35)
-        boosted["cataract"] -= 0.10
         boosted["healthy"]  -= 0.15
         
-    # 2. Red Eye (High Precision Color Feature)
+    # 3. Red Eye (High Precision Color Feature)
     if r > 0.22:
         r_boost = 0.15 * (r / 0.30)
         boosted["red_eye"] += min(r_boost, 0.30)
         boosted["healthy"] -= 0.10
         
-    # 3. Cataract (Low Precision - Generic Blur)
-    # Only boost if it's NOT looking like Jaundice or Red Eye
-    if c > 0.45:
-        if y < 0.22 and r < 0.25:
-            boosted["cataract"] += 0.15
-        else:
-            # If color features are present, cloudiness is likely just image blur
-            boosted["cataract"] += 0.02 
+    # 4. Final Cataract Catch-all (for non-bright cataracts)
+    if c > 0.50 and not is_bright_cloudy:
+        boosted["cataract"] += 0.10
             
     # Clamp and Re-normalize
     boosted = {k: max(0.0001, v) for k, v in boosted.items()}
