@@ -61,6 +61,18 @@ body {
   margin-bottom: 3rem;
 }
 
+.logo-frame {
+  width: 44px;
+  height: 44px;
+  background: rgba(0, 240, 255, 0.05);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+}
+
 .logo-svg {
   filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.4));
   flex-shrink: 0;
@@ -199,7 +211,8 @@ body {
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
 }
 
 /* ── EMPTY STATE ── */
@@ -331,8 +344,14 @@ body {
 .img-frame img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   background: #000;
+  transition: transform 0.5s ease;
+}
+
+.img-frame:hover img {
+  transform: scale(1.05);
 }
 
 .heatmap-frame img {
@@ -651,6 +670,86 @@ body {
   color: var(--cyan);
   transform: rotate(180deg);
 }
+
+/* ── LOWER DECK & REVEAL ── */
+
+.lower-deck {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding-bottom: 4rem;
+}
+
+.reveal-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 2rem;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reco-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.reco-item {
+  background: var(--bg-card);
+  padding: 1.5rem;
+  border-radius: 16px;
+  border-left: 4px solid var(--cyan);
+}
+
+.reco-item h4 {
+  color: var(--cyan);
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.reco-item p {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.diet-container {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2rem;
+  margin-top: 1.5rem;
+  align-items: center;
+}
+
+.diet-chart {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.diet-card {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), transparent);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  padding: 1.25rem;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.diet-card .icon { font-size: 1.5rem; margin-bottom: 0.5rem; display: block; }
+.diet-card label { font-size: 0.7rem; color: var(--cyan); font-weight: 700; text-transform: uppercase; }
+.diet-card p { font-size: 0.85rem; margin-top: 0.25rem; }
+
+.diet-info h4 { font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--text-main); }
+.diet-info p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.98); }

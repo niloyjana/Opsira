@@ -14,14 +14,16 @@
   <!-- SIDEBAR: Controls & Branding -->
   <aside class="sidebar">
     <div class="brand">
-      <svg class="logo-svg" viewBox="0 0 200 200" width="32" height="32">
-        <path d="M18,100 Q100,30 182,100 Q100,170 18,100 Z" fill="white" fill-opacity="0.1"/>
-        <path d="M18,100 Q100,30 182,100 Q100,170 18,100 Z" fill="none" stroke="var(--cyan)" stroke-width="12" stroke-linejoin="round"/>
-        <circle cx="100" cy="100" r="36" fill="var(--cyan)"/>
-        <circle cx="100" cy="100" r="26" fill="var(--bg-panel)"/>
-        <circle cx="100" cy="100" r="16" fill="var(--cyan)"/>
-        <circle cx="108" cy="92" r="6" fill="white"/>
-      </svg>
+      <div class="logo-frame">
+        <svg class="logo-svg" viewBox="0 0 200 200" width="32" height="32">
+          <path d="M18,100 Q100,30 182,100 Q100,170 18,100 Z" fill="white" fill-opacity="0.1"/>
+          <path d="M18,100 Q100,30 182,100 Q100,170 18,100 Z" fill="none" stroke="var(--cyan)" stroke-width="12" stroke-linejoin="round"/>
+          <circle cx="100" cy="100" r="36" fill="var(--cyan)"/>
+          <circle cx="100" cy="100" r="26" fill="var(--bg-panel)"/>
+          <circle cx="100" cy="100" r="16" fill="var(--cyan)"/>
+          <circle cx="108" cy="92" r="6" fill="white"/>
+        </svg>
+      </div>
       <div class="logo-text">Opsira<span>AI</span></div>
     </div>
 
@@ -198,6 +200,34 @@
         </div>
       </section>
 
+    </div>
+    <!-- LOWER DECK: Recommendations & Diet (Scroll Reveal) -->
+    <div id="lowerDeck" class="lower-deck" style="display:none">
+      <section class="reveal-card recommendation-section">
+        <div class="card-header">
+          <h3>Ocular Improvement Protocol</h3>
+          <span class="tag">PERSONALIZED</span>
+        </div>
+        <div class="reco-grid" id="recoGrid">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <section class="reveal-card diet-section">
+        <div class="card-header">
+          <h3>Nutritional Intelligence</h3>
+          <span class="tag">DIET CHART</span>
+        </div>
+        <div class="diet-container">
+          <div class="diet-chart" id="dietChart">
+             <!-- Populated by JS -->
+          </div>
+          <div class="diet-info">
+             <h4>Vision-Essential Nutrients</h4>
+             <p>Tailored dietary adjustments to support ocular recovery and long-term retinal health.</p>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
 </div>

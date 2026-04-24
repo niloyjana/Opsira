@@ -45,6 +45,7 @@ async function processFile(file) {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     renderDashboard(data);
+    renderLowerDeck(data);
   } catch (err) {
     console.error("Analysis Failed:", err);
     alert("Analysis Failed: Check backend connection.");
@@ -96,7 +97,7 @@ function updateMetricBars(metrics) {
     container.innerHTML += `
       <div class="dev-item">
         <div class="dev-header">
-          <span style="color:var(--text-dim); text-transform: capitalize;">${key}</span>
+          <span style="color:var(--text-dim); text-transform: uppercase; font-size: 0.6rem; font-weight: 700;">${key}</span>
           <span style="color:${color}">${val}%</span>
         </div>
         <div class="dev-bar-bg">
@@ -114,7 +115,7 @@ function updateProbabilityBars(probs, prediction) {
   
   if (charts.prob) charts.prob.destroy();
 
-  const labels = Object.keys(probs).map(s => s.toUpperCase());
+  const labels = Object.keys(probs).map(s => s.replace('_', ' ').toUpperCase());
   const values = Object.values(probs);
 
   charts.prob = new Chart(ctx, {
@@ -148,7 +149,7 @@ function updateRadarChart(radar) {
   charts.radar = new Chart(ctx, {
     type: 'radar',
     data: {
-      labels: radar.labels,
+      labels: radar.labels.map(l => l.toUpperCase()),
       datasets: [
         {
           label: 'Current Scan',
@@ -189,16 +190,104 @@ function showLoading(show) {
   const skeleton = document.getElementById('skeletonGrid');
   const empty = document.getElementById('emptyState');
   const results = document.getElementById('results');
+  const lower = document.getElementById('lowerDeck');
 
   if (show) {
     overlay.style.display = 'flex';
     skeleton.style.display = 'grid';
     empty.style.display = 'none';
     results.style.display = 'none';
+    lower.style.display = 'none';
   } else {
     overlay.style.display = 'none';
     skeleton.style.display = 'none';
   }
+}
+
+function renderLowerDeck(data) {
+  const lower = document.getElementById('lowerDeck');
+  const recoGrid = document.getElementById('recoGrid');
+  const dietChart = document.getElementById('dietChart');
+  
+  lower.style.display = 'flex';
+  
+  // Recommendations
+  const recos = getRecommendations(data.prediction);
+  recoGrid.innerHTML = recos.map(r => `
+    <div class="reco-item">
+      <h4>${r.title}</h4>
+      <p>${r.text}</p>
+    </div>
+  `).join('');
+  
+  // Diet Chart
+  const diet = getDiet(data.prediction);
+  dietChart.innerHTML = diet.map(d => `
+    <div class="diet-card">
+      <span class="icon">${d.icon}</span>
+      <label>${d.label}</label>
+      <p>${d.value}</p>
+    </div>
+  `).join('');
+
+  setupScrollReveal();
+}
+
+function getRecommendations(pred) {
+  const base = [
+    { title: "Standard Protocol", text: "Ensure 20-20-20 rule during screen time." },
+    { title: "Hydration", text: "Maintain optimal fluid intake for tear film stability." }
+  ];
+  const specific = {
+    cataract: [
+      { title: "UV Protection", text: "Wear polarized sunglasses to prevent further protein cross-linking." },
+      { title: "Surgical Prep", text: "Consult with a surgeon about intraocular lens (IOL) options." }
+    ],
+    jaundice: [
+      { title: "Liver Panel", text: "Request an immediate metabolic panel (ALT/AST levels)." },
+      { title: "Alcohol Cessation", text: "Zero tolerance for hepatic stressors during recovery." }
+    ],
+    red_eye: [
+      { title: "Compresse", text: "Apply cool compresses to reduce vascular dilation." },
+      { title: "Contagion Control", text: "Avoid sharing towels or touching eyes to prevent spread." }
+    ],
+    healthy: [
+      { title: "Routine Check", text: "Annual comprehensive dilated eye exams are recommended." },
+      { title: "Lutein Intake", text: "Continue high intake of leafy greens to support macular pigment." }
+    ]
+  };
+  return [...(specific[pred] || []), ...base];
+}
+
+function getDiet(pred) {
+  const diet = [
+    { icon: "🥕", label: "Beta-Carotene", value: "Carrots, Sweet Potatoes" },
+    { icon: "🐟", label: "Omega-3", value: "Salmon, Flaxseeds" },
+    { icon: "🥗", label: "Lutein", value: "Spinach, Kale" }
+  ];
+  if (pred === 'jaundice') {
+    return [
+      { icon: "🍋", label: "Citrus", value: "Lemon water to flush toxins" },
+      { icon: "🍵", label: "Dandelion", value: "Liver supporting herbal tea" },
+      { icon: "🍚", label: "Whole Grains", value: "Easily digestible fiber" }
+    ];
+  }
+  return diet;
+}
+
+function setupScrollReveal() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal-card').forEach(card => {
+    card.classList.remove('visible');
+    observer.observe(card);
+  });
 }
 
 function getEmoji(pred) {
