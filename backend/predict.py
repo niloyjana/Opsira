@@ -88,7 +88,7 @@ def extract_metrics(img_bgr):
     
     gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
     laplacian_variance = cv2.Laplacian(gray, cv2.CV_64F).var()
-    cloudiness_raw = float(1 / (1 + laplacian_variance / 500))
+    cloudiness_raw = float(1 / (1 + laplacian_variance / 200))
     
     brightness_raw = float(np.mean(img_rgb))
     contrast_raw   = float(np.std(img_rgb))
@@ -143,14 +143,14 @@ def generate_simulated_heatmap(img_bgr, raw_metrics):
 def apply_hybrid_boosting(probs, raw_metrics):
     """Problem 2: Feature-Model Boosting Logic"""
     boosted = probs.copy()
-    BOOST = 0.25
-    PEN   = 0.15
+    BOOST = 0.12
+    PEN   = 0.08
     
     c = raw_metrics["cloudiness"]
     y = raw_metrics["yellowness"]
     r = raw_metrics["redness"]
     
-    if c > 0.35:
+    if c > 0.40:
         boosted["cataract"] += BOOST
         boosted["red_eye"]  -= PEN
         boosted["healthy"]  -= PEN * 0.5
