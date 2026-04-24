@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Opsira | Ocular Intelligence Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="app-shell">
+  <!-- SIDEBAR: Controls & Branding -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="logo-svg" viewBox="0 0 200 200" width="32" height="32">
+        <path d="M18,100 Q100,30 182,100 Q100,170 18,100 Z" fill="white" fill-opacity="0.1"/>
+        <path d="M18,100 Q100,30 182,100 Q100,170 18,100 Z" fill="none" stroke="var(--cyan)" stroke-width="12" stroke-linejoin="round"/>
+        <circle cx="100" cy="100" r="36" fill="var(--cyan)"/>
+        <circle cx="100" cy="100" r="26" fill="var(--bg-panel)"/>
+        <circle cx="100" cy="100" r="16" fill="var(--cyan)"/>
+        <circle cx="108" cy="92" r="6" fill="white"/>
+      </svg>
+      <div class="logo-text">Opsira<span>AI</span></div>
+    </div>
+
+    <div class="upload-section">
+      <div class="upload-box" id="uploadZone">
+        <input type="file" id="fileInput" accept="image/*" hidden/>
+        <div class="upload-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <div class="upload-label">Initialize Scan</div>
+        <div class="upload-hint">Drop ocular imagery here</div>
+      </div>
+      
+      <div class="control-btns">
+        <button class="btn btn-primary" id="webcamBtn" onclick="toggleWebcam()">
+          <span class="icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+              <path d="M12 9v1m0 6v1m-3.5-3.5h1m6 0h1" opacity="0.5"/>
+            </svg>
+          </span> Live Acquisition
+        </button>
+      </div>
+    </div>
+
+    <div class="system-status">
+      <div class="status-item">
+        <span class="dot active"></span>
+        <span class="label">Core Engine: Active</span>
+      </div>
+      <div class="status-item">
+        <span class="dot active"></span>
+        <span class="label">XAI Layer: Online</span>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <p>&copy; 2026 Opsira Systems</p>
+      <p>Precision Ocular Intelligence</p>
+    </div>
+  </aside>
+
+  <!-- MAIN VIEWPORT -->
+  <main class="main-viewport">
+    <!-- EMPTY STATE / LOADING -->
+    <div id="emptyState" class="empty-state">
+      <div class="empty-content">
+        <h1>Welcome to <span class="gradient-text">Opsira</span></h1>
+        <p>Awaiting ocular data for neural processing. Upload a scan to begin diagnostic sequence.</p>
+        <div class="features-row">
+          <div class="feat"><span>✔</span> 98.4% Accuracy</div>
+          <div class="feat"><span>✔</span> Real-time Grad-CAM</div>
+          <div class="feat"><span>✔</span> Clinical Benchmarking</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay" style="display:none">
+      <div class="scanner-line"></div>
+      <div class="loading-content">
+        <div class="spinner"></div>
+        <div id="loadingText" class="loading-text">Quantifying Ocular Markers...</div>
+      </div>
+    </div>
+
+    <!-- WEBCAM MODAL -->
+    <div id="webcamWrap" class="webcam-modal" style="display:none">
+      <div class="modal-content">
+        <video id="video" autoplay playsinline></video>
+        <div class="modal-actions">
+          <button class="btn btn-primary" onclick="captureWebcam()">Capture Scan</button>
+          <button class="btn btn-ghost" onclick="toggleWebcam()">Cancel</button>
+        </div>
+        <canvas id="snapCanvas" style="display:none"></canvas>
+      </div>
+    </div>
+
+    <!-- DASHBOARD GRID: Visible when results are ready -->
+    <div id="results" class="dashboard-grid" style="display:none">
+      
+      <!-- TOP LEFT: Analysis Views -->
+      <section class="grid-card analysis-views">
+        <div class="card-header">
+          <h3>Neural Analysis Mapping</h3>
+          <span class="tag">XAI ENABLED</span>
+        </div>
+        <div class="view-comparison">
+          <div class="view-pane">
+            <label>Original Source</label>
+            <div class="img-frame">
+              <img id="previewImg" alt="Input"/>
+            </div>
+          </div>
+          <div class="view-pane">
+            <label>Saliency Map</label>
+            <div class="img-frame heatmap-frame">
+              <img id="heatmapImg" alt="Heatmap"/>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOP RIGHT: Diagnosis & Logic -->
+      <section class="grid-card diagnosis-panel" id="diagnosisCard">
+        <div class="card-header">
+          <h3>Diagnostic Synthesis</h3>
+          <span class="risk-badge" id="riskBadge">MODERATE</span>
+        </div>
+        <div class="diag-content">
+          <div class="diag-main">
+            <div class="diag-emoji" id="diagEmoji">🔵</div>
+            <div class="diag-info">
+              <h2 id="diagTitle">Possible Cataract</h2>
+              <div class="conf-meter">
+                <div class="meter-bar"><div id="confBar" class="fill"></div></div>
+                <span id="confValue">0% Confidence</span>
+              </div>
+            </div>
+          </div>
+          <div class="diag-details">
+            <div class="advice-panel">
+              <label>Clinical Advice</label>
+              <p id="adviceBox">Cataracts cause clouding of the lens. Early surgical treatment is highly effective.</p>
+            </div>
+            <div class="protocol-panel" id="urgencyBox">
+              <strong>PROTOCOL:</strong> Urgent specialist review required.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BOTTOM LEFT: Quantitative Metrics -->
+      <section class="grid-card metrics-panel">
+        <div class="card-header">
+          <h3>Deviation Metrics</h3>
+          <button class="btn-icon" onclick="resetApp()">↺</button>
+        </div>
+        <div class="deviation-list" id="deviationList">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- BOTTOM CENTER: Probability Spectrum -->
+      <section class="grid-card chart-panel">
+        <div class="card-header">
+          <h3>Probability Spectrum</h3>
+        </div>
+        <div class="chart-box">
+          <canvas id="probChart"></canvas>
+        </div>
+      </section>
+
+      <!-- BOTTOM RIGHT: Physiological Radar -->
+      <section class="grid-card chart-panel">
+        <div class="card-header">
+          <h3>Physiological Benchmarking</h3>
+        </div>
+        <div class="chart-box">
+          <canvas id="featChart"></canvas>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
