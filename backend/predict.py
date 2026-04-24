@@ -88,7 +88,7 @@ def extract_metrics(img_bgr):
     
     gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
     laplacian_variance = cv2.Laplacian(gray, cv2.CV_64F).var()
-    cloudiness_raw = float(1 / (1 + laplacian_variance / 200))
+    cloudiness_raw = float(1 / (1 + laplacian_variance / 100))
     
     brightness_raw = float(np.mean(img_rgb))
     contrast_raw   = float(np.std(img_rgb))
@@ -141,27 +141,35 @@ def generate_simulated_heatmap(img_bgr, raw_metrics):
     return cv2.resize(heatmap, (224, 224))
 
 def apply_hybrid_boosting(probs, raw_metrics):
-    """Problem 2: Feature-Model Boosting Logic"""
+    """Problem 2: Feature-Model Boosting Logic (Refined)"""
     boosted = probs.copy()
-    BOOST = 0.12
-    PEN   = 0.08
     
     c = raw_metrics["cloudiness"]
     y = raw_metrics["yellowness"]
     r = raw_metrics["redness"]
     
-    if c > 0.40:
-        boosted["cataract"] += BOOST
-        boosted["red_eye"]  -= PEN
-        boosted["healthy"]  -= PEN * 0.5
+    # 1. Jaundice (High Precision Color Feature)
+    if y > 0.18:
+        y_boost = 0.20 * (y / 0.25)
+        boosted["jaundice"] += min(y_boost, 0.35)
+        boosted["cataract"] -= 0.10
+        boosted["healthy"]  -= 0.15
         
-    if y > 0.20:
-        boosted["jaundice"] += BOOST * 0.8
-        boosted["healthy"]  -= PEN * 0.5
+    # 2. Red Eye (High Precision Color Feature)
+    if r > 0.22:
+        r_boost = 0.15 * (r / 0.30)
+        boosted["red_eye"] += min(r_boost, 0.30)
+        boosted["healthy"] -= 0.10
         
-    if r > 0.25 and c < 0.30:
-        boosted["red_eye"]  += BOOST * 0.7
-        
+    # 3. Cataract (Low Precision - Generic Blur)
+    # Only boost if it's NOT looking like Jaundice or Red Eye
+    if c > 0.45:
+        if y < 0.22 and r < 0.25:
+            boosted["cataract"] += 0.15
+        else:
+            # If color features are present, cloudiness is likely just image blur
+            boosted["cataract"] += 0.02 
+            
     # Clamp and Re-normalize
     boosted = {k: max(0.0001, v) for k, v in boosted.items()}
     total = sum(boosted.values())
