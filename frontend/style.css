@@ -259,10 +259,9 @@ body {
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: 1.6fr 1fr; /* Increased top row ratio to fit larger images */
+  grid-template-rows: auto auto; 
   gap: 1.25rem;
-  flex: 1;
-  min-height: 0;
+  margin-bottom: 2rem;
   animation: fadeIn 0.5s ease-out;
 }
 
@@ -337,7 +336,7 @@ body {
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  height: 450px; /* Increased from 280px for maximum visibility */
+  height: 400px;
   transition: all 0.3s ease;
 }
 
@@ -548,14 +547,14 @@ body {
 .skeleton-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: 1.6fr 1fr;
+  grid-template-rows: auto auto;
   gap: 1.25rem;
-  flex: 1;
-  min-height: 0;
+  margin-bottom: 2rem;
   pointer-events: none;
 }
 
 .skeleton-card {
+  min-height: 300px;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 20px;
