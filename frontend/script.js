@@ -186,7 +186,19 @@ function updateRadarChart(radar) {
 
 function showLoading(show) {
   const overlay = document.getElementById('loadingOverlay');
-  overlay.style.display = show ? 'flex' : 'none';
+  const skeleton = document.getElementById('skeletonGrid');
+  const empty = document.getElementById('emptyState');
+  const results = document.getElementById('results');
+
+  if (show) {
+    overlay.style.display = 'flex';
+    skeleton.style.display = 'grid';
+    empty.style.display = 'none';
+    results.style.display = 'none';
+  } else {
+    overlay.style.display = 'none';
+    skeleton.style.display = 'none';
+  }
 }
 
 function getEmoji(pred) {

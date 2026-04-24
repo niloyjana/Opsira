@@ -85,11 +85,20 @@
     </div>
 
     <div id="loadingOverlay" class="loading-overlay" style="display:none">
-      <div class="scanner-line"></div>
-      <div class="loading-content">
-        <div class="spinner"></div>
-        <div id="loadingText" class="loading-text">Quantifying Ocular Markers...</div>
+      <div class="spinner-wrap">
+        <div class="spinner-outer"></div>
+        <div class="spinner-inner"></div>
       </div>
+      <div id="loadingText" class="loading-text">Quantifying Ocular Markers...</div>
+    </div>
+
+    <!-- SKELETON STATE -->
+    <div id="skeletonGrid" class="skeleton-grid" style="display:none">
+      <div class="skeleton-card" style="grid-column: span 2; grid-row: 1;"></div>
+      <div class="skeleton-card" style="grid-column: span 2; grid-row: 1;"></div>
+      <div class="skeleton-card" style="grid-column: span 1; grid-row: 2;"></div>
+      <div class="skeleton-card" style="grid-column: span 1; grid-row: 2;"></div>
+      <div class="skeleton-card" style="grid-column: span 2; grid-row: 2;"></div>
     </div>
 
     <!-- WEBCAM MODAL -->

@@ -15,6 +15,7 @@
   --font-main: 'Outfit', sans-serif;
   --font-mono: 'JetBrains+Mono', monospace;
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --shimmer: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
 }
 
 * {
@@ -523,10 +524,52 @@ body {
 
 /* ── MODALS & OVERLAYS ── */
 
+/* ── SKELETON LOADING ── */
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 1.6fr 1fr;
+  gap: 1.25rem;
+  flex: 1;
+  min-height: 0;
+  pointer-events: none;
+}
+
+.skeleton-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--shimmer);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  100% { left: 100%; }
+}
+
+.skeleton-box {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
 .loading-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(13, 17, 23, 0.9);
+  background: rgba(13, 17, 23, 0.7);
+  backdrop-filter: blur(4px);
   z-index: 100;
   display: flex;
   align-items: center;
@@ -534,35 +577,49 @@ body {
   flex-direction: column;
 }
 
-.loading-content { text-align: center; }
+.spinner-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
 
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--border);
+.spinner-outer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 2px solid transparent;
   border-top-color: var(--cyan);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin: 0 auto 1rem;
+}
+
+.spinner-inner {
+  position: absolute;
+  width: 70%;
+  height: 70%;
+  border: 2px solid transparent;
+  border-bottom-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1.5s linear reverse infinite;
+}
+
+.loading-text {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  color: var(--cyan);
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.scanner-line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: var(--cyan);
-  box-shadow: 0 0 15px var(--cyan);
-  animation: scan 2s ease-in-out infinite;
-}
-
-@keyframes scan {
-  0%, 100% { top: 0; }
-  50% { top: 100%; }
-}
+/* Scanner Line Removed per request */
+.scanner-line { display: none; }
 
 .webcam-modal {
   position: absolute;
