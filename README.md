@@ -10,7 +10,7 @@ Opsira is a high-performance, hybrid AI diagnostic platform for rapid ocular scr
 - **Physical Biomarkers (Problem 1)**: Real-time calculation of ocular metrics:
   - 🔴 **Redness**: Detects inflammation and vascular congestion.
   - 🟡 **Yellowness**: Identifies early indicators of Jaundice (Icterus).
-  - 🌫️ **Cloudiness**: Detects lens opacity related to Cataracts.
+  - 🌫️ **Cloudiness**: Detects lens opacity related to Cataracts. 
 - **Explainable AI (Grad-CAM)**: Generates visual heatmaps to show exactly which areas of the eye influenced the AI's decision.
 - **Feature-Model Boosting (Problem 2)**: A unique logic layer that adjusts neural confidence scores based on extracted physical biomarkers for higher diagnostic accuracy.
 - **Clinical Protocols**: Automatically suggests next steps and severity levels for detected conditions.
