@@ -1,4 +1,4 @@
-# 👁️ Opsira — Ocular Intelligence Dashboard
+#  Opsira — Ocular Intelligence Dashboard
 
 Opsira is a high-performance, hybrid AI diagnostic platform for rapid ocular screening. By combining classical Computer Vision (OpenCV) with Deep Learning (TensorFlow), Opsira provides a multi-layered analysis of eye health, including physical metrics, disease classification, and explainable AI heatmaps. 
 
